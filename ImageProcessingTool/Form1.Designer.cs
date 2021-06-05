@@ -1959,7 +1959,6 @@
             this.groupBox8.TabIndex = 5;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Edge Detectors";
-            this.groupBox8.Enter += new System.EventHandler(this.groupBox8_Enter);
             // 
             // udEdgeDetectors2
             // 
