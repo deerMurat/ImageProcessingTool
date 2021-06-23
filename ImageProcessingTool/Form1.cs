@@ -33,6 +33,8 @@ namespace ImageProcessingTool
             Color[,] inputImageHist = new Color[16, 16];
             Color rgbColor;
 
+          
+
             string[] inputMatRow = richTextBox1.Text.Split('\n');
             string[] inputMatCol;
             int[] pixel;
@@ -74,6 +76,11 @@ namespace ImageProcessingTool
                             rgbColor = Color.FromArgb(inputImage[i, j].R, 0, 0);
                             inputImageMat.SetPixel(i, j, rgbColor);
                         }
+                        else
+                        {
+                            rgbColor = Color.FromArgb(inputImage[i, j].R, inputImage[i, j].G, inputImage[i, j].B);
+                            inputImageMat.SetPixel(i, j, rgbColor);
+                        }
                     }
                 }
                 pbInputImage1.Image = inputImageMat;
@@ -102,7 +109,7 @@ namespace ImageProcessingTool
                     //if (rbGray.Checked) richTextBox2.Text += (String.Format("{0,4} |", resultImageMat.GetPixel(i, j).R.ToString().PadLeft(3,'0'));
                     if (rbGray.Checked) richTextBox2.Text += (String.Format("{0,1} ", resultImageMat.GetPixel(i, j).R.ToString().PadLeft(3, '0')));
 
-                    else richTextBox2.Text += resultImageMat.GetPixel(i, j).R.ToString() + "," + resultImageMat.GetPixel(i, j).G.ToString() + "," + resultImageMat.GetPixel(i, j).B.ToString() + ";";
+                    else richTextBox2.Text += resultImageMat.GetPixel(i, j).R.ToString() + "," + resultImageMat.GetPixel(i, j).G.ToString() + "," + resultImageMat.GetPixel(i, j).B.ToString() + " ";
                 }
 
                 richTextBox2.Text += "\n";
@@ -148,7 +155,10 @@ namespace ImageProcessingTool
 
         private void btnColorToGrayscale_Click(object sender, EventArgs e)
         {
+            if (rbMatrix.Checked) GetPixel();
+            else imageBit = 255;
             pbResultImage.Image = ColorToGrayscale(pbInputImage1, tbInputImage1);
+            if (rbMatrix.Checked) SetPixel();
         }
         /*
         private void btnArithmeticOp_Click(object sender, EventArgs e)
@@ -228,7 +238,6 @@ namespace ImageProcessingTool
             tbResultImage.Text = "ResultImage (" + resultImage.Width + " x " + resultImage.Height + ")";
             return resultImage;
         }
-
         private Bitmap ColorToGrayscale(PictureBox picBox, TextBox txtBox)
         {
             Color rgbColor, grayColor;
@@ -303,7 +312,6 @@ namespace ImageProcessingTool
             txtBox.Text = "ResultImage (" + resultImage.Width + " x " + resultImage.Height + ")";
             return resultImage;
         }
-
         private Bitmap ArithmeticOperationsWithConstant(PictureBox picBox, int[] trackBarConst, TextBox txtBox)
         {
             Color rgbColor, newColor;
@@ -355,7 +363,6 @@ namespace ImageProcessingTool
             txtBox.Text = "ResultImage (" + resultImage.Width + " x " + resultImage.Height + ")";
             return resultImage;
         }
-
         private Bitmap ArithmeticOperationsWithImage(PictureBox picBox, PictureBox picBoxSecond, TrackBar txtBlendPercent, TextBox txtBox)
         {
             Color rgbColor, rgbSecondColor, newColor;
@@ -416,7 +423,6 @@ namespace ImageProcessingTool
             txtBox.Text = "ResultImage (" + resultImage.Width + " x " + resultImage.Height + ")";
             return resultImage;
         }
-
         private Bitmap Thresholding(PictureBox picBox, TrackBar trackbarThres, TextBox txtBox)
         {
             Color rgbColor, newColor;
@@ -454,7 +460,6 @@ namespace ImageProcessingTool
             txtBox.Text = "ResultImage (" + resultImage.Width + " x " + resultImage.Height + ")";
             return resultImage;
         }
-
         private Bitmap AdaptiveThresholding(PictureBox picBox, ComboBox cbAdapThres, ComboBox cbMatSize, TextBox txtBox)
         {
             Color rgbColor, newColor;
@@ -591,7 +596,6 @@ namespace ImageProcessingTool
             txtBox.Text = "ResultImage (" + resultImage.Width + " x " + resultImage.Height + ")";
             return resultImage;
         }
-
         private Bitmap Quantization(PictureBox picBox, NumericUpDown txtInter, TextBox txtBox)
         {
             Color rgbColor, newColor;
@@ -625,7 +629,6 @@ namespace ImageProcessingTool
             txtBox.Text = "ResultImage (" + resultImage.Width + " x " + resultImage.Height + ")";
             return resultImage;
         }
-
         private Bitmap Convolution(PictureBox picBox, TextBox[,] txtConvMatrix, TextBox txtBox)
         {
             Color rgbColor, newColor;
@@ -670,7 +673,6 @@ namespace ImageProcessingTool
             txtBox.Text = "ResultImage (" + resultImage.Width + " x " + resultImage.Height + ")";
             return resultImage;
         }
-
         private Bitmap LogarithmOperator(PictureBox picBox, TextBox txtBox)
         {
             Color rgbColor, newColor;
@@ -716,17 +718,16 @@ namespace ImageProcessingTool
             txtBox.Text = "ResultImage (" + resultImage.Width + " x " + resultImage.Height + ")";
             return resultImage;
         }
-
         private Bitmap HistogramEqualization(PictureBox picBox, TextBox txtBox)
         {
             Color rgbColor, newColor;
             int R = 0, G = 0, B = 0;
-            int[] histogramR = new int[(imageBit + 1)];
-            int[] histogramG = new int[(imageBit + 1)];
-            int[] histogramB = new int[(imageBit + 1)];
-            int[] sumHistogramR = new int[(imageBit + 1)];
-            int[] sumHistogramG = new int[(imageBit + 1)];
-            int[] sumHistogramB = new int[(imageBit + 1)];
+            int[] histogramR = new int[256];
+            int[] histogramG = new int[256];
+            int[] histogramB = new int[256];
+            int[] sumHistogramR = new int[256];
+            int[] sumHistogramG = new int[256];
+            int[] sumHistogramB = new int[256];
             int kR, kG, kB, sumR, sumG, sumB;
             float imageArea;
             Bitmap inputImage, resultImage;
@@ -734,7 +735,6 @@ namespace ImageProcessingTool
             int imageWidth = inputImage.Width;
             int imageHeight = inputImage.Height;
             resultImage = new Bitmap(imageWidth, imageHeight);
-
             for (int x = 0; x < imageWidth; x++)
             {
                 for (int y = 0; y < imageHeight; y++)
@@ -748,9 +748,8 @@ namespace ImageProcessingTool
                     histogramB[kB] = histogramB[kB] + 1;
                 }
             }
-
             sumR = sumG = sumB = 0;
-            for (int i = 0; i < (imageBit + 1); i++)
+            for (int i = 0; i < 256; i++)
             {
                 sumR = sumR + histogramR[i];
                 sumG = sumG + histogramG[i];
@@ -759,7 +758,6 @@ namespace ImageProcessingTool
                 sumHistogramG[i] = sumG;
                 sumHistogramB[i] = sumB;
             }
-
             imageArea = imageWidth * imageHeight;
             for (int x = 0; x < imageWidth; x++)
             {
@@ -769,12 +767,12 @@ namespace ImageProcessingTool
                     kR = rgbColor.R;
                     kG = rgbColor.G;
                     kB = rgbColor.B;
-                    R = Convert.ToInt32((sumHistogramR[kR] / imageArea) * ((imageBit + 1) - 1));
-                    G = Convert.ToInt32((sumHistogramG[kG] / imageArea) * ((imageBit + 1) - 1));
-                    B = Convert.ToInt32((sumHistogramB[kB] / imageArea) * ((imageBit + 1) - 1));
-                    R = Math.Max(Math.Min(R, imageBit), 0);
-                    G = Math.Max(Math.Min(G, imageBit), 0);
-                    B = Math.Max(Math.Min(B, imageBit), 0);
+                    R = Convert.ToInt32((sumHistogramR[kR] / imageArea) * (imageBit - 1));
+                    G = Convert.ToInt32((sumHistogramG[kG] / imageArea) * (256 - 1));
+                    B = Convert.ToInt32((sumHistogramB[kB] / imageArea) * (256 - 1));
+                    R = Math.Max(Math.Min(R, 255), 0);
+                    G = Math.Max(Math.Min(G, 255), 0);
+                    B = Math.Max(Math.Min(B, 255), 0);
                     newColor = Color.FromArgb(R, G, B);
                     resultImage.SetPixel(x, y, newColor);
                 }
@@ -782,7 +780,6 @@ namespace ImageProcessingTool
             txtBox.Text = "ResultImage (" + resultImage.Width + " x " + resultImage.Height + ")";
             return resultImage;
         }
-
         private Bitmap Normalization(PictureBox picBox, TextBox txtBox)
         {
             Color rgbColor, newColor;
@@ -821,7 +818,7 @@ namespace ImageProcessingTool
                 for (int y = 0; y < imageHeight; y++)
                 {
                     rgbColor = inputImage.GetPixel(x, y);
-                    R = (rgbColor.R - cR) * ((b - a) / (dR - cR)) + a;
+                    R=Convert.ToInt32((double)(rgbColor.R - cR) * (b - a) / ((dR - cR) + a));
                     G = (rgbColor.G - cG) * ((b - a) / (dG - cG)) + a;
                     B = (rgbColor.B - cB) * ((b - a) / (dB - cB)) + a;
                     newColor = Color.FromArgb(R, G, B);
@@ -831,7 +828,6 @@ namespace ImageProcessingTool
             txtBox.Text = "ResultImage (" + resultImage.Width + " x " + resultImage.Height + ")";
             return resultImage;
         }
-
         private Bitmap Scaling(PictureBox picBox, ComboBox cbSType, ComboBox cbSMethod, NumericUpDown txtFact, TextBox txtBox)
         {
             Color rgbColor, newColor;
@@ -900,7 +896,7 @@ namespace ImageProcessingTool
                                                     sumB = sumB + rgbColor.B;
                                                 }
                                             }
-                                            R = sumR / (factor * factor);
+                                            R = Convert.ToInt32( (double)sumR / (factor * factor));
                                             G = sumG / (factor * factor);
                                             B = sumB / (factor * factor);
                                             newColor = Color.FromArgb(R, G, B);
@@ -1015,7 +1011,6 @@ namespace ImageProcessingTool
             }
             return resultImage;
         }
-
         private Bitmap Rotation(PictureBox picBox, ComboBox cbRotAlias, TrackBar txtAng, TextBox txtBox)
         {
             Color rgbColor;
@@ -1286,7 +1281,7 @@ namespace ImageProcessingTool
                             sumB = sumB + rgbColor.B;
                         }
                     }
-                    meanR = sumR / (matrixSize * matrixSize);
+                    meanR = Convert.ToInt32( Math.Round((double)sumR / (matrixSize * matrixSize)));
                     meanG = sumG / (matrixSize * matrixSize);
                     meanB = sumB / (matrixSize * matrixSize);
                     R = meanR;
@@ -1294,6 +1289,7 @@ namespace ImageProcessingTool
                     B = meanB;
                     newColor = Color.FromArgb(R, G, B);
                     resultImage.SetPixel(x, y, newColor);
+            
                 }
             }
             txtBox.Text = "ResultImage (" + resultImage.Width + " x " + resultImage.Height + ")";
@@ -1404,163 +1400,73 @@ namespace ImageProcessingTool
             inputImage = new Bitmap(picBox.Image);
             int imageWidth = inputImage.Width;
             int imageHeight = inputImage.Height;
-            int iteration, newR, newG, newB;
-            int neighbor1R, neighbor1G, neighbor1B, neighbor2R, neighbor2G, neighbor2B;
+            int iteration, newR;
+            int neighbor1R, neighbor2R;
             ArrayList arrayR = new ArrayList();
             ArrayList arrayG = new ArrayList();
             ArrayList arrayB = new ArrayList();
             resultImage = new Bitmap(imageWidth, imageHeight);
-            iteration = Convert.ToInt32(txtIter.Text);
-
+            iteration = Convert.ToInt32(txtIter.Value);
             for (int i = 1; i <= iteration; i++)
             {
-                for (int x = 1; x < imageWidth - 2; x++)
+                for (int x = 1; x <= imageWidth-2 ; x++)
                 {
-                    for (int y = 1; y < imageHeight - 2; y++)
+                    for (int y = 1; y <= imageHeight-2 ; y++)
                     {
                         rgbColor = inputImage.GetPixel(x, y);
                         newR = rgbColor.R;
-                        newG = rgbColor.G;
-                        newB = rgbColor.B;
                         rgbColor = inputImage.GetPixel(x - 1, y);
                         neighbor1R = rgbColor.R;
-                        neighbor1G = rgbColor.G;
-                        neighbor1B = rgbColor.B;
                         rgbColor = inputImage.GetPixel(x + 1, y);
                         neighbor2R = rgbColor.R;
-                        neighbor2G = rgbColor.G;
-                        neighbor2B = rgbColor.B;
+
                         if (neighbor1R >= newR + 2) newR = newR + 1;
-                        if (neighbor1G >= newG + 2) newG = newG + 1;
-                        if (neighbor1B >= newB + 2) newB = newB + 1;
                         if (neighbor1R > newR && newR <= neighbor2R) newR = newR + 1;
-                        if (neighbor1G > newG && newG <= neighbor2G) newG = newG + 1;
-                        if (neighbor1B > newB && newB <= neighbor2B) newB = newB + 1;
                         if (neighbor2R > newR && newR <= neighbor1R) newR = newR + 1;
-                        if (neighbor2G > newG && newG <= neighbor1G) newG = newG + 1;
-                        if (neighbor2B > newB && newB <= neighbor1B) newB = newB + 1;
                         if (neighbor2R >= newR + 2) newR = newR + 1;
-                        if (neighbor2G >= newG + 2) newG = newG + 1;
-                        if (neighbor2B >= newB + 2) newB = newB + 1;
 
                         if (neighbor1R <= newR - 2) newR = newR - 1;
-                        if (neighbor1G <= newG - 2) newG = newG - 1;
-                        if (neighbor1B <= newB - 2) newB = newB - 1;
                         if (neighbor1R < newR && newR >= neighbor2R) newR = newR - 1;
-                        if (neighbor1G < newG && newG >= neighbor2G) newG = newG - 1;
-                        if (neighbor1B < newB && newB >= neighbor2B) newB = newB - 1;
                         if (neighbor2R < newR && newR >= neighbor1R) newR = newR - 1;
-                        if (neighbor2G < newG && newG >= neighbor1G) newG = newG - 1;
-                        if (neighbor2B < newB && newB >= neighbor1B) newB = newB - 1;
                         if (neighbor2R <= newR - 2) newR = newR - 1;
-                        if (neighbor2G <= newG - 2) newG = newG - 1;
-                        if (neighbor2B <= newB - 2) newB = newB - 1;
 
-                        rgbColor = inputImage.GetPixel(x, y - 1);
-                        neighbor1R = rgbColor.R;
-                        neighbor1G = rgbColor.G;
-                        neighbor1B = rgbColor.B;
                         rgbColor = inputImage.GetPixel(x, y + 1);
+                        neighbor1R = rgbColor.R;
+                        rgbColor = inputImage.GetPixel(x, y - 1);
                         neighbor2R = rgbColor.R;
-                        neighbor2G = rgbColor.G;
-                        neighbor2B = rgbColor.B;
                         if (neighbor1R >= newR + 2) newR = newR + 1;
-                        if (neighbor1G >= newG + 2) newG = newG + 1;
-                        if (neighbor1B >= newB + 2) newB = newB + 1;
                         if (neighbor1R > newR && newR <= neighbor2R) newR = newR + 1;
-                        if (neighbor1G > newG && newG <= neighbor2G) newG = newG + 1;
-                        if (neighbor1B > newB && newB <= neighbor2B) newB = newB + 1;
                         if (neighbor2R > newR && newR <= neighbor1R) newR = newR + 1;
-                        if (neighbor2G > newG && newG <= neighbor1G) newG = newG + 1;
-                        if (neighbor2B > newB && newB <= neighbor1B) newB = newB + 1;
                         if (neighbor2R >= newR + 2) newR = newR + 1;
-                        if (neighbor2G >= newG + 2) newG = newG + 1;
-                        if (neighbor2B >= newB + 2) newB = newB + 1;
-
                         if (neighbor1R <= newR - 2) newR = newR - 1;
-                        if (neighbor1G <= newG - 2) newG = newG - 1;
-                        if (neighbor1B <= newB - 2) newB = newB - 1;
                         if (neighbor1R < newR && newR >= neighbor2R) newR = newR - 1;
-                        if (neighbor1G < newG && newG >= neighbor2G) newG = newG - 1;
-                        if (neighbor1B < newB && newB >= neighbor2B) newB = newB - 1;
                         if (neighbor2R < newR && newR >= neighbor1R) newR = newR - 1;
-                        if (neighbor2G < newG && newG >= neighbor1G) newG = newG - 1;
-                        if (neighbor2B < newB && newB >= neighbor1B) newB = newB - 1;
                         if (neighbor2R <= newR - 2) newR = newR - 1;
-                        if (neighbor2G <= newG - 2) newG = newG - 1;
-                        if (neighbor2B <= newB - 2) newB = newB - 1;
-
                         rgbColor = inputImage.GetPixel(x - 1, y - 1);
                         neighbor1R = rgbColor.R;
-                        neighbor1G = rgbColor.G;
-                        neighbor1B = rgbColor.B;
                         rgbColor = inputImage.GetPixel(x + 1, y + 1);
                         neighbor2R = rgbColor.R;
-                        neighbor2G = rgbColor.G;
-                        neighbor2B = rgbColor.B;
                         if (neighbor1R >= newR + 2) newR = newR + 1;
-                        if (neighbor1G >= newG + 2) newG = newG + 1;
-                        if (neighbor1B >= newB + 2) newB = newB + 1;
                         if (neighbor1R > newR && newR <= neighbor2R) newR = newR + 1;
-                        if (neighbor1G > newG && newG <= neighbor2G) newG = newG + 1;
-                        if (neighbor1B > newB && newB <= neighbor2B) newB = newB + 1;
                         if (neighbor2R > newR && newR <= neighbor1R) newR = newR + 1;
-                        if (neighbor2G > newG && newG <= neighbor1G) newG = newG + 1;
-                        if (neighbor2B > newB && newB <= neighbor1B) newB = newB + 1;
                         if (neighbor2R >= newR + 2) newR = newR + 1;
-                        if (neighbor2G >= newG + 2) newG = newG + 1;
-                        if (neighbor2B >= newB + 2) newB = newB + 1;
-
                         if (neighbor1R <= newR - 2) newR = newR - 1;
-                        if (neighbor1G <= newG - 2) newG = newG - 1;
-                        if (neighbor1B <= newB - 2) newB = newB - 1;
                         if (neighbor1R < newR && newR >= neighbor2R) newR = newR - 1;
-                        if (neighbor1G < newG && newG >= neighbor2G) newG = newG - 1;
-                        if (neighbor1B < newB && newB >= neighbor2B) newB = newB - 1;
                         if (neighbor2R < newR && newR >= neighbor1R) newR = newR - 1;
-                        if (neighbor2G < newG && newG >= neighbor1G) newG = newG - 1;
-                        if (neighbor2B < newB && newB >= neighbor1B) newB = newB - 1;
                         if (neighbor2R <= newR - 2) newR = newR - 1;
-                        if (neighbor2G <= newG - 2) newG = newG - 1;
-                        if (neighbor2B <= newB - 2) newB = newB - 1;
-
-                        rgbColor = inputImage.GetPixel(x + 1, y - 1);
-                        neighbor1R = rgbColor.R;
-                        neighbor1G = rgbColor.G;
-                        neighbor1B = rgbColor.B;
                         rgbColor = inputImage.GetPixel(x - 1, y + 1);
+                        neighbor1R = rgbColor.R;
+                        rgbColor = inputImage.GetPixel(x + 1, y - 1);
                         neighbor2R = rgbColor.R;
-                        neighbor2G = rgbColor.G;
-                        neighbor2B = rgbColor.B;
                         if (neighbor1R >= newR + 2) newR = newR + 1;
-                        if (neighbor1G >= newG + 2) newG = newG + 1;
-                        if (neighbor1B >= newB + 2) newB = newB + 1;
                         if (neighbor1R > newR && newR <= neighbor2R) newR = newR + 1;
-                        if (neighbor1G > newG && newG <= neighbor2G) newG = newG + 1;
-                        if (neighbor1B > newB && newB <= neighbor2B) newB = newB + 1;
                         if (neighbor2R > newR && newR <= neighbor1R) newR = newR + 1;
-                        if (neighbor2G > newG && newG <= neighbor1G) newG = newG + 1;
-                        if (neighbor2B > newB && newB <= neighbor1B) newB = newB + 1;
                         if (neighbor2R >= newR + 2) newR = newR + 1;
-                        if (neighbor2G >= newG + 2) newG = newG + 1;
-                        if (neighbor2B >= newB + 2) newB = newB + 1;
-
                         if (neighbor1R <= newR - 2) newR = newR - 1;
-                        if (neighbor1G <= newG - 2) newG = newG - 1;
-                        if (neighbor1B <= newB - 2) newB = newB - 1;
                         if (neighbor1R < newR && newR >= neighbor2R) newR = newR - 1;
-                        if (neighbor1G < newG && newG >= neighbor2G) newG = newG - 1;
-                        if (neighbor1B < newB && newB >= neighbor2B) newB = newB - 1;
                         if (neighbor2R < newR && newR >= neighbor1R) newR = newR - 1;
-                        if (neighbor2G < newG && newG >= neighbor1G) newG = newG - 1;
-                        if (neighbor2B < newB && newB >= neighbor1B) newB = newB - 1;
                         if (neighbor2R <= newR - 2) newR = newR - 1;
-                        if (neighbor2G <= newG - 2) newG = newG - 1;
-                        if (neighbor2B <= newB - 2) newB = newB - 1;
-
                         R = Math.Max(Math.Min(newR, imageBit), 0);
-                        G = Math.Max(Math.Min(newG, imageBit), 0);
-                        B = Math.Max(Math.Min(newB, imageBit), 0);
                         newColor = Color.FromArgb(R, G, B);
                         resultImage.SetPixel(x, y, newColor);
                     }
@@ -1569,6 +1475,7 @@ namespace ImageProcessingTool
             txtBox.Text = "ResultImage (" + resultImage.Width + " x " + resultImage.Height + ")";
             return resultImage;
         }
+
         private Bitmap Gaussian(PictureBox picBox, TextBox[,] txtMaskMatrix, TextBox txtBox)
         {
             Color rgbColor, newColor;
@@ -1662,7 +1569,7 @@ namespace ImageProcessingTool
                             sumB = sumB + rgbColor.B;
                         }
                     }
-                    meanR = sumR / (matrixSize * matrixSize);
+                    meanR = Convert.ToInt32((double)sumR / (matrixSize * matrixSize));
                     meanG = sumG / (matrixSize * matrixSize);
                     meanB = sumB / (matrixSize * matrixSize);
                     R = Math.Max(Math.Min(meanR, imageBit), 0);
@@ -1713,9 +1620,9 @@ namespace ImageProcessingTool
                     int RR = edgeR[x, y];
                     int GG = edgeG[x, y];
                     int BB = edgeB[x, y];
-                    edgeR[x, y] = (RR - cR) * (b - a) / (dR - cR) + a;
-                    edgeG[x, y] = (GG - cG) * (b - a) / (dG - cG) + a;
-                    edgeB[x, y] = (BB - cB) * (b - a) / (dB - cB) + a;
+                    edgeR[x, y] = Convert.ToInt32((double)(RR - cR) * (b - a) / (dR - cR) + a);
+                    //edgeG[x, y] = (GG - cG) * (b - a) / (dG - cG) + a;
+                    //edgeB[x, y] = (BB - cB) * (b - a) / (dB - cB) + a;
                 }
             }
 
@@ -1817,18 +1724,12 @@ namespace ImageProcessingTool
             int matrixSize = 3;
             int halfSize = matrixSize / 2;
             int prewittThreshold;
-            k1[0, 0] = Convert.ToInt32(txtMaskMat1[0, 0].Text); k1[0, 1] = Convert.ToInt32(txtMaskMat1[0, 1].Text); k1[0, 2] =
-            Convert.ToInt32(txtMaskMat1[0, 2].Text);
-            k1[1, 0] = Convert.ToInt32(txtMaskMat1[1, 0].Text); k1[1, 1] = Convert.ToInt32(txtMaskMat1[1, 1].Text); k1[1, 2] =
-            Convert.ToInt32(txtMaskMat1[1, 2].Text);
-            k1[2, 0] = Convert.ToInt32(txtMaskMat1[2, 0].Text); k1[2, 1] = Convert.ToInt32(txtMaskMat1[2, 1].Text); k1[2, 2] =
-            Convert.ToInt32(txtMaskMat1[2, 2].Text);
-            k2[0, 0] = Convert.ToInt32(txtMaskMat2[0, 0].Text); k2[0, 1] = Convert.ToInt32(txtMaskMat2[0, 1].Text); k2[0, 2] =
-            Convert.ToInt32(txtMaskMat2[0, 2].Text);
-            k2[1, 0] = Convert.ToInt32(txtMaskMat2[1, 0].Text); k2[1, 1] = Convert.ToInt32(txtMaskMat2[1, 1].Text); k2[1, 2] =
-            Convert.ToInt32(txtMaskMat2[1, 2].Text);
-            k2[2, 0] = Convert.ToInt32(txtMaskMat2[2, 0].Text); k2[2, 1] = Convert.ToInt32(txtMaskMat2[2, 1].Text); k2[2, 2] =
-            Convert.ToInt32(txtMaskMat2[2, 2].Text);
+            k1[0, 0] = Convert.ToInt32(txtMaskMat1[0, 0].Text); k1[0, 1] = Convert.ToInt32(txtMaskMat1[0, 1].Text); k1[0, 2] = Convert.ToInt32(txtMaskMat1[0, 2].Text);
+            k1[1, 0] = Convert.ToInt32(txtMaskMat1[1, 0].Text); k1[1, 1] = Convert.ToInt32(txtMaskMat1[1, 1].Text); k1[1, 2] = Convert.ToInt32(txtMaskMat1[1, 2].Text);
+            k1[2, 0] = Convert.ToInt32(txtMaskMat1[2, 0].Text); k1[2, 1] = Convert.ToInt32(txtMaskMat1[2, 1].Text); k1[2, 2] = Convert.ToInt32(txtMaskMat1[2, 2].Text);
+            k2[0, 0] = Convert.ToInt32(txtMaskMat2[0, 0].Text); k2[0, 1] = Convert.ToInt32(txtMaskMat2[0, 1].Text); k2[0, 2] = Convert.ToInt32(txtMaskMat2[0, 2].Text);
+            k2[1, 0] = Convert.ToInt32(txtMaskMat2[1, 0].Text); k2[1, 1] = Convert.ToInt32(txtMaskMat2[1, 1].Text); k2[1, 2] = Convert.ToInt32(txtMaskMat2[1, 2].Text);
+            k2[2, 0] = Convert.ToInt32(txtMaskMat2[2, 0].Text); k2[2, 1] = Convert.ToInt32(txtMaskMat2[2, 1].Text); k2[2, 2] = Convert.ToInt32(txtMaskMat2[2, 2].Text);
             prewittThreshold = Convert.ToInt32(txtPrewittThres.Text);
             for (int x = halfSize; x < imageWidth - halfSize; x++)
             {
@@ -2148,18 +2049,12 @@ namespace ImageProcessingTool
             int matrixSize = 3;
             int halfSize = matrixSize / 2;
             int differenceOfGaussianThres;
-            k1[0, 0] = Convert.ToInt32(txtMaskMat1[0, 0].Text); k1[0, 1] = Convert.ToInt32(txtMaskMat1[0, 1].Text); k1[0, 2] =
-           Convert.ToInt32(txtMaskMat1[0, 2].Text);
-            k1[1, 0] = Convert.ToInt32(txtMaskMat1[1, 0].Text); k1[1, 1] = Convert.ToInt32(txtMaskMat1[1, 1].Text); k1[1, 2] =
-           Convert.ToInt32(txtMaskMat1[1, 2].Text);
-            k1[2, 0] = Convert.ToInt32(txtMaskMat1[2, 0].Text); k1[2, 1] = Convert.ToInt32(txtMaskMat1[2, 1].Text); k1[2, 2] =
-           Convert.ToInt32(txtMaskMat1[2, 2].Text);
-            k2[0, 0] = Convert.ToInt32(txtMaskMat2[0, 0].Text); k2[0, 1] = Convert.ToInt32(txtMaskMat2[0, 1].Text); k2[0, 2] =
-           Convert.ToInt32(txtMaskMat2[0, 2].Text);
-            k2[1, 0] = Convert.ToInt32(txtMaskMat2[1, 0].Text); k2[1, 1] = Convert.ToInt32(txtMaskMat2[1, 1].Text); k2[1, 2] =
-           Convert.ToInt32(txtMaskMat2[1, 2].Text);
-            k2[2, 0] = Convert.ToInt32(txtMaskMat2[2, 0].Text); k2[2, 1] = Convert.ToInt32(txtMaskMat2[2, 1].Text); k2[2, 2] =
-           Convert.ToInt32(txtMaskMat2[2, 2].Text);
+            k1[0, 0] = Convert.ToInt32(txtMaskMat1[0, 0].Text); k1[0, 1] = Convert.ToInt32(txtMaskMat1[0, 1].Text); k1[0, 2] = Convert.ToInt32(txtMaskMat1[0, 2].Text);
+            k1[1, 0] = Convert.ToInt32(txtMaskMat1[1, 0].Text); k1[1, 1] = Convert.ToInt32(txtMaskMat1[1, 1].Text); k1[1, 2] = Convert.ToInt32(txtMaskMat1[1, 2].Text);
+            k1[2, 0] = Convert.ToInt32(txtMaskMat1[2, 0].Text); k1[2, 1] = Convert.ToInt32(txtMaskMat1[2, 1].Text); k1[2, 2] = Convert.ToInt32(txtMaskMat1[2, 2].Text);
+            k2[0, 0] = Convert.ToInt32(txtMaskMat2[0, 0].Text); k2[0, 1] = Convert.ToInt32(txtMaskMat2[0, 1].Text); k2[0, 2] = Convert.ToInt32(txtMaskMat2[0, 2].Text);
+            k2[1, 0] = Convert.ToInt32(txtMaskMat2[1, 0].Text); k2[1, 1] = Convert.ToInt32(txtMaskMat2[1, 1].Text); k2[1, 2] = Convert.ToInt32(txtMaskMat2[1, 2].Text);
+            k2[2, 0] = Convert.ToInt32(txtMaskMat2[2, 0].Text); k2[2, 1] = Convert.ToInt32(txtMaskMat2[2, 1].Text); k2[2, 2] = Convert.ToInt32(txtMaskMat2[2, 2].Text);
             differenceOfGaussianThres = Convert.ToInt32(txtDifferenceOfGaussianThres.Text);
             for (int x = halfSize; x < imageWidth - halfSize; x++)
             {
@@ -2290,6 +2185,8 @@ namespace ImageProcessingTool
                 trackBarThresholding.Enabled = false;
             }
 
+            if (rbQuantiation.Checked) tbQuantization.Enabled = true;
+            else tbQuantization.Enabled = false;
             if (rbWithConstant.Checked)
             {
                 cbWithConstant.Enabled = true;
@@ -2535,8 +2432,18 @@ namespace ImageProcessingTool
             HistogramForm.ImageHistogram = pbInputImage1.Image;
             HistogramForm.Show();
 
+        }
+
+        private void btnHistOutput_Click(object sender, EventArgs e)
+        {
+            if (rbMatrix.Checked) GetPixel();
+            else imageBit = 255;
+            Form2 HistogramForm = new Form2();
+            HistogramForm.ImageHistogram = pbResultImage.Image;
+            HistogramForm.Show();
 
         }
+
         private void btnPointOp_Click(object sender, EventArgs e)
         {
             if (rbMatrix.Checked) GetPixel();
@@ -2546,35 +2453,32 @@ namespace ImageProcessingTool
                 { tbConvolution00, tbConvolution01, tbConvolution02 },
                 { tbConvolution10, tbConvolution11, tbConvolution12 },
                 { tbConvolution20, tbConvolution21, tbConvolution22 } };
-
-            if (pbInputImage1.Image != null)
+                      
+            if (rbThresholding.Checked)
             {
-                if (rbThresholding.Checked)
-                {
-                    pbResultImage.Image = Thresholding(pbInputImage1, trackBarThresholding, tbResultImage);
-                }
-                if (rbAdaptiveThresholding.Checked)
-                {
-                    pbResultImage.Image = AdaptiveThresholding(pbInputImage1, cbAdaptiveThres, cbAdaptiveThresMatrix, tbResultImage);
-                }
-                if (rbConvolution.Checked)
-                {
-                    pbResultImage.Image = Convolution(pbInputImage1, tbConvolutionMatrix, tbResultImage);
-                }
-                if (rbQuantiation.Checked)
-                {
-                    pbResultImage.Image = Quantization(pbInputImage1, tbQuantization, tbResultImage);
-                }
-                if (rbLogarithmOperator.Checked)
-                {
-                    pbResultImage.Image = LogarithmOperator(pbInputImage1, tbResultImage);
-                }
-                if (rbHistogramEq.Checked)
-                {
-                    pbResultImage.Image = HistogramEqualization(pbInputImage1, tbResultImage);
-                }
+                pbResultImage.Image = Thresholding(pbInputImage1, trackBarThresholding, tbResultImage);
             }
-            else MessageBox.Show("Resim 1 Seçilmedi!");
+            if (rbAdaptiveThresholding.Checked)
+            {
+                pbResultImage.Image = AdaptiveThresholding(pbInputImage1, cbAdaptiveThres, cbAdaptiveThresMatrix, tbResultImage);
+            }
+            if (rbConvolution.Checked)
+            {
+                pbResultImage.Image = Convolution(pbInputImage1, tbConvolutionMatrix, tbResultImage);
+            }
+            if (rbQuantiation.Checked)
+            {
+                pbResultImage.Image = Quantization(pbInputImage1, tbQuantization, tbResultImage);
+            }
+            if (rbLogarithmOperator.Checked)
+            {
+                pbResultImage.Image = LogarithmOperator(pbInputImage1, tbResultImage);
+            }
+            if (rbHistogramEq.Checked)
+            {
+                pbResultImage.Image = HistogramEqualization(pbInputImage1, tbResultImage);
+            }
+           
 
             if (rbMatrix.Checked) SetPixel();
         }
@@ -2680,18 +2584,6 @@ namespace ImageProcessingTool
             pbResultImage.Image = Scaling(pbInputImage1, cbScaling, cbScalingMethod, tbScalingFactor, tbResultImage);
             if (rbMatrix.Checked) SetPixel();
         }
-        private void cbMean_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (rbMatrix.Checked) GetPixel();
-            else imageBit = 255;
-
-            if (rbMean.Checked) pbResultImage.Image = Mean(pbInputImage1, cbMean, tbResultImage);
-            if (rbMedian.Checked) pbResultImage.Image = Median(pbInputImage1, cbMedian, tbResultImage);
-            if (rbConservativeSmoothing.Checked) pbResultImage.Image = ConservativeSmoothing(pbInputImage1, cbConservativeSmoothing, tbResultImage);
-            if (rbCrimminsSpeckleRemoval.Checked) pbResultImage.Image = CrimminsSpeckleRemoval(pbInputImage1, tbCrimmins, tbResultImage);
-
-            if (rbMatrix.Checked) SetPixel();
-        }
         private void btnResultImage_Click(object sender, EventArgs e)
         {
             using (SaveFileDialog saveFileDialog = new SaveFileDialog() { Filter = @"PNG|*.png" })
@@ -2713,6 +2605,15 @@ namespace ImageProcessingTool
                 { textBox2, textBox5, textBox8 },
                 { textBox3, textBox6, textBox9 } };
 
+            if (rbMean.Checked)
+            {
+                pbResultImage.Image = Mean(pbInputImage1, cbMean, tbResultImage);
+            }
+            if (rbMedian.Checked)
+            {
+                pbResultImage.Image = Median(pbInputImage1, cbMedian, tbResultImage);
+            }
+
             if (rbGaussianSmoothing.Checked)
             {
                 pbResultImage.Image = Gaussian(pbInputImage1, tbGaussianMatrix, tbResultImage);
@@ -2721,6 +2622,14 @@ namespace ImageProcessingTool
             if (rbUnsharpFilter.Checked)
             {
                 pbResultImage.Image = Unsharp(pbInputImage1, cbUnsharpFilter, tbUnsharpScaling, tbResultImage);
+            }
+            if(rbCrimminsSpeckleRemoval.Checked)
+            {
+                pbResultImage.Image = CrimminsSpeckleRemoval(pbInputImage1, tbCrimmins, tbResultImage);
+            }
+            if(rbConservativeSmoothing.Checked)
+            {
+                pbResultImage.Image = ConservativeSmoothing(pbInputImage1, cbConservativeSmoothing, tbResultImage);
             }
 
             if (rbMatrix.Checked) SetPixel();
@@ -2864,6 +2773,8 @@ namespace ImageProcessingTool
                 }
             }
         }
+
+       
     }
 }
 

@@ -207,6 +207,7 @@
             this.rbPrewitt = new System.Windows.Forms.RadioButton();
             this.tbSobel = new System.Windows.Forms.TextBox();
             this.rbSobel = new System.Windows.Forms.RadioButton();
+            this.btnHistOutput = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -1009,7 +1010,6 @@
             this.tbQuantization.Name = "tbQuantization";
             this.tbQuantization.Size = new System.Drawing.Size(38, 20);
             this.tbQuantization.TabIndex = 4;
-            this.tbQuantization.ValueChanged += new System.EventHandler(this.tbTransX_ValueChanged);
             // 
             // cbAdaptiveThres
             // 
@@ -1227,7 +1227,7 @@
             // lblThresholdingValue
             // 
             this.lblThresholdingValue.AutoSize = true;
-            this.lblThresholdingValue.Location = new System.Drawing.Point(194, 20);
+            this.lblThresholdingValue.Location = new System.Drawing.Point(20, 197);
             this.lblThresholdingValue.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblThresholdingValue.Name = "lblThresholdingValue";
             this.lblThresholdingValue.Size = new System.Drawing.Size(0, 13);
@@ -1790,7 +1790,6 @@
             this.tbCrimmins.Name = "tbCrimmins";
             this.tbCrimmins.Size = new System.Drawing.Size(38, 20);
             this.tbCrimmins.TabIndex = 4;
-            this.tbCrimmins.ValueChanged += new System.EventHandler(this.cbMean_SelectedIndexChanged);
             // 
             // label12
             // 
@@ -1892,7 +1891,6 @@
             this.cbConservativeSmoothing.Name = "cbConservativeSmoothing";
             this.cbConservativeSmoothing.Size = new System.Drawing.Size(38, 21);
             this.cbConservativeSmoothing.TabIndex = 1;
-            this.cbConservativeSmoothing.SelectedIndexChanged += new System.EventHandler(this.cbMean_SelectedIndexChanged);
             // 
             // cbMedian
             // 
@@ -1911,7 +1909,6 @@
             this.cbMedian.Name = "cbMedian";
             this.cbMedian.Size = new System.Drawing.Size(38, 21);
             this.cbMedian.TabIndex = 1;
-            this.cbMedian.SelectedIndexChanged += new System.EventHandler(this.cbMean_SelectedIndexChanged);
             // 
             // cbMean
             // 
@@ -1930,7 +1927,6 @@
             this.cbMean.Name = "cbMean";
             this.cbMean.Size = new System.Drawing.Size(38, 21);
             this.cbMean.TabIndex = 1;
-            this.cbMean.SelectedIndexChanged += new System.EventHandler(this.cbMean_SelectedIndexChanged);
             // 
             // groupBox8
             // 
@@ -2335,6 +2331,17 @@
             this.rbSobel.UseVisualStyleBackColor = true;
             this.rbSobel.CheckedChanged += new System.EventHandler(this.RadioButton_Checked);
             // 
+            // btnHistOutput
+            // 
+            this.btnHistOutput.Location = new System.Drawing.Point(472, 541);
+            this.btnHistOutput.Margin = new System.Windows.Forms.Padding(2);
+            this.btnHistOutput.Name = "btnHistOutput";
+            this.btnHistOutput.Size = new System.Drawing.Size(72, 41);
+            this.btnHistOutput.TabIndex = 2;
+            this.btnHistOutput.Text = "Histogram Output";
+            this.btnHistOutput.UseVisualStyleBackColor = true;
+            this.btnHistOutput.Click += new System.EventHandler(this.btnHistOutput_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2349,6 +2356,7 @@
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.btnHistOutput);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -2577,6 +2585,7 @@
         private System.Windows.Forms.TextBox textBox27;
         private System.Windows.Forms.DomainUpDown udEdgeDetectors1;
         private System.Windows.Forms.DomainUpDown udEdgeDetectors2;
+        private System.Windows.Forms.Button btnHistOutput;
     }
 }
 
